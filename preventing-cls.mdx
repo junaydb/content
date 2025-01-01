@@ -1,0 +1,52 @@
+---
+title: "Preventing Layout Shift from Images with Astro"
+order: 1
+published: true
+rows:
+  - type: text
+    title: Technology
+    items:
+      - Astro
+      - Typescript
+---
+
+Recently, I made this image modal component that also displays a skeleton whilst the image is loading:
+![A large stock image](https://images.pexels.com/photos/1525041/pexels-photo-1525041.jpeg)
+
+I've used a large image here so you hopefully should have seen the skeleton.
+If your internet is very fast, you might need to throttle your network in dev tools (and disable caching) to see it.
+
+If you're interested, you can view the source for this component [here](https://github.com/junaydb/website/blob/4d6556ee19a77e5bc15e0c6d33cba776c93348ab/src/astro/ImageModal.astro)
+
+To make this component as useful as possible it needed to support images of any size, which came with the challenge of figuring out how to avoid cumulative layout shift (CLS).
+
+This is because when the browser doesn't know the size of the image ahead of time, no space for the image is reserved on the page until it has been fetched,
+at which point you see a nasty layout shift caused by the browser updating the layout to make space for the image which is very jarring for users.
+
+To fix this, the width and height of the image element must be set ahead of time so the browser can reserve the correct amount of space before the image has loaded.
+
+This site is built with [Astro](https://astro.build/), a super-charged static-site generator that allows you to seamlessly use JS at build time to pass whatever data you may need to your HTML template, meaning I could fetch the image at build time using JS to check its dimensions.
+
+Astro goes one step further and makes this super easy with their `inferRemoteSize()` function:
+
+```js
+---
+import { inferRemoteSize } from "astro:assets";
+
+const { src, alt } = Astro.props;
+const { width, height } = await inferRemoteSize(src);
+---
+
+<img
+  src={src}
+  alt={alt}
+  width={width}
+  height={height}
+/>
+```
+
+Data from the code in the fences can be accessed from the HTML template below the fence.
+
+Just like that, we have the size of the image at build time. We use this to set the width and height of the image element which correctly reserves the space for the image from before the client's browser fetches it, successfully preventing layout shift.
+
+Under the hood, `inferRemoteSize()` uses a modified version of the [image-size](https://github.com/image-size/image-size) package, so check that out if you're not using Astro.
