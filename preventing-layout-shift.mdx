@@ -16,9 +16,9 @@ Recently, I made this image modal component that also displays a skeleton whilst
 I've used a large image here so you hopefully should have seen the skeleton.
 If your internet is very fast, you might need to throttle your network in dev tools (and disable caching) to see it.
 
-If you're interested, you can view the source for this component [here](https://github.com/junaydb/website/blob/4d6556ee19a77e5bc15e0c6d33cba776c93348ab/src/astro/ImageModal.astro)
+If you're interested, you can view the source for this component [here](https://github.com/junaydb/website/blob/4d6556ee19a77e5bc15e0c6d33cba776c93348ab/src/astro/ImageModal.astro).
 
-To make this component as useful as possible it needed to support images of any size, which came with the challenge of figuring out how to avoid cumulative layout shift (CLS).
+To make this component as useful as possible it needed to support images of any size, which added the challenge of figuring out how to prevent layout shift.
 
 This is because when the browser doesn't know the size of the image ahead of time, no space for the image is reserved on the page until it has been fetched,
 at which point you see a nasty layout shift caused by the browser updating the layout to make space for the image which is very jarring for users.
